@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dôležitá otázka... ❤️</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/sk.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 50%, #fbb6ce 100%);
+            margin: 0;
+            overflow-x: hidden;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(219, 112, 147, 0.2);
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            box-sizing: border-box;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        h1, h2 { color: #4a5568; margin-top: 0; }
+        h1 { margin-bottom: 40px; font-size: 2.2rem; line-height: 1.3; }
+        h2 { margin-bottom: 25px; font-size: 1.8rem; color: #b83280; }
+
+        .buttons-container { position: relative; height: 90px; width: 100%; }
+
+        .btn {
+            width: 130px; height: 55px; font-size: 18px; font-weight: bold;
+            border: none; border-radius: 30px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: absolute; top: 15px;
+            display: flex; align-items: center; justify-content: center; white-space: nowrap;
+        }
+
+        #btn-yes { 
+            background-color: #e53e3e; color: white; left: calc(50% - 145px); 
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+        #btn-yes:hover {
+            background-color: #c53030;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+        }
+
+        #btn-no { 
+            background-color: #edf2f7; color: #4a5568; left: calc(50% + 15px); 
+            z-index: 9999;
+            transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        #date-options-section, #calendar-section { 
+            display: none; 
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+
+        .option-card {
+            background: #fff; border: 2px solid #e2e8f0; border-radius: 16px;
+            padding: 16px; font-size: 16px; font-weight: 600; color: #4a5568;
+            cursor: pointer; display: flex; align-items: center; justify-content: flex-start; gap: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .option-card:hover {
+            border-color: #fbb6ce;
+            background-color: #fffaf0;
+            transform: translateX(5px);
+        }
+
+        .option-card.selected { 
+            border-color: #b83280; background-color: #fff5f7; color: #b83280; 
+            box-shadow: 0 4px 12px rgba(184, 50, 128, 0.15);
+        }
+        
+        .option-emoji { font-size: 24px; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; color: #718096; font-weight: 600; font-size: 14px; }
+
+        .select-row { display: flex; gap: 10px; align-items: center; }
+        .time-separator { font-size: 20px; font-weight: bold; color: #4a5568; }
+
+        input[type="text"], select {
+            width: 100%; padding: 14px; font-size: 16px; border: 2px solid #e2e8f0;
+            border-radius: 12px; box-sizing: border-box; outline: none; font-family: inherit; color: #4a5568;
+            background-color: white; cursor: pointer; transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, select:focus { border-color: #fbb6ce; }
+
+        .flatpickr-calendar { background: #fff !important; border-radius: 16px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
+        .flatpickr-day.selected { background: #b83280 !important; border-color: #b83280 !important; }
+
+        .action-btn { 
+            position: relative; width: 100%; background: linear-gradient(135deg, #d53f8c 0%, #b83280 100%); 
+            color: white; margin-top: 10px; box-shadow: 0 4px 15px rgba(184, 50, 128, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 50, 128, 0.5);
+        }
+        .action-btn:disabled { background: #cbd5e0; box-shadow: none; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div id="question-section" class="card">
+        <h1>Ahoj, chceš ísť so mnou na rande? ❤️</h1>
+        <div class="buttons-container">
+            <button id="btn-yes" class="btn" onclick="showOptions()">Áno</button>
+            <button id="btn-no" class="btn">Nie</button>
+        </div>
+    </div>
+
+    <div id="date-options-section" class="card">
+        <h2>Jeej! Čo podnikneme? ✨</h2>
+        <div class="options-grid">
+            <div class="option-card" onclick="selectOption(this, 'Kaviareň / čajovňa')"><span class="option-emoji">☕</span> <span>Kaviareň / čajovňa</span></div>
+            <div class="option-card" onclick="selectOption(this, 'Prechádzka v parku')"><span class="option-emoji">🌳</span> <span>Prechádzka v parku</span></div>
+            <div class="option-card" onclick="selectOption(this, 'Nočná jazda autom')"><span class="option-emoji">🚗</span> <span>Nočná jazda autom</span></div>
+            <div class="option-card" onclick="selectOption(this, 'Večera u mňa')"><span class="option-emoji">🍝</span> <span>Večera u mňa</span></div>
+        </div>
+        <button id="btn-next" class="btn action-btn" onclick="showCalendar()" disabled>Pokračovať ➔</button>
+    </div>
+
+    <div id="calendar-section" class="card">
+        <h2>A kedy ti to vyhovuje? 🌹</h2>
+        
+        <div class="form-group">
+            <label for="datepicker">Vyber si deň z kalendára:</label>
+            <input type="text" id="datepicker" placeholder="Klikni a vyber dátum..." readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Vyber si presný čas:</label>
+            <div class="select-row">
+                <select id="select-hour">
+                    <option value="" disabled selected>Hodina</option>
+                    <script>
+                        for (let i = 0; i <= 23; i++) {
+                            let h = i < 10 ? '0' + i : i;
+                            document.write('<option value="' + h + '">' + h + '</option>');
+                        }
+                    </script>
+                </select>
+
+                <div class="time-separator">:</div>
+
+                <select id="select-minute">
+                    <option value="" disabled selected>Minúta</option>
+                    <script>
+                        for (let i = 0; i <= 59; i++) {
+                            let m = i < 10 ? '0' + i : i;
+                            document.write('<option value="' + m + '">' + m + '</option>');
+                        }
+                    </script>
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" id="hidden-date-type" value="">
+        <button id="btn-submit" class="btn action-btn" onclick="odoslatRande()">Potvrdiť rande! 🎉</button>
+    </div>
+
+    <script>
+        var escapeBtn = document.getElementById('btn-no');
+        var questionSection = document.getElementById('question-section');
+        var optionsSection = document.getElementById('date-options-section');
+        var calendarSection = document.getElementById('calendar-section');
+        var nextBtn = document.getElementById('btn-next');
+        var hiddenInput = document.getElementById('hidden-date-type');
+        var submitBtn = document.getElementById('btn-submit');
+
+        flatpickr("#datepicker", {
+            locale: "sk",
+            dateFormat: "d. m. Y",
+            minDate: "today",
+            disableMobile: "true" 
+        });
+
+        function moveButton() {
+            var vpWidth = window.innerWidth;
+            var vpHeight = window.innerHeight;
+            
+            var randomX = Math.floor(Math.random() * (vpWidth - 160)) + 20;
+            var randomY = Math.floor(Math.random() * (vpHeight - 80)) + 20;
+            
+            escapeBtn.style.position = 'fixed';
+            escapeBtn.style.left = '0px'; 
+            escapeBtn.style.top = '0px';
+            escapeBtn.style.transform = 'translate(' + randomX + 'px, ' + randomY + 'px)';
+        }
+        
+        escapeBtn.addEventListener('mouseover', moveButton);
+        escapeBtn.addEventListener('touchstart', function(e) { e.preventDefault(); moveButton(); });
+
+        function showOptions() {
+            questionSection.style.display = 'none';
+            optionsSection.style.display = 'block';
+            setTimeout(function() {
+                optionsSection.style.opacity = '1';
+                optionsSection.style.transform = 'scale(1)';
+            }, 10);
+        }
+
+        function selectOption(element, value) {
+            var cards = document.querySelectorAll('.option-card');
+            for(var i=0; i<cards.length; i++) { cards[i].classList.remove('selected'); }
+            element.classList.add('selected');
+            hiddenInput.value = value;
+            nextBtn.disabled = false;
+        }
+
+        function showCalendar() {
+            optionsSection.style.display = 'none';
+            calendarSection.style.display = 'block';
+            setTimeout(function() {
+                calendarSection.style.opacity = '1';
+                calendarSection.style.transform = 'scale(1)';
+            }, 10);
+        }
+
+        function odoslatRande() {
+            var rande = hiddenInput.value;
+            var datum = document.getElementById('datepicker').value;
+            var hodina = document.getElementById('select-hour').value;
+            var minuta = document.getElementById('select-minute').value;
+
+            if (!datum || !hodina || !minuta) {
+                alert('Prosím, navoľ kompletný dátum z kalendára aj čas.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Odosielam... ⏳';
+
+            var dataNaOdoslanie = {
+                plan: rande,
+                datum: datum,
+                cas: hodina + ':' + minuta
+            };
+
+            var urlAplikacie = "https://script.google.com/macros/s/AKfycby9nhXO9NHTIZs6rXkmTjiHlN6fv5_YSnmhjYfAViv4XGxGcR98Ls6Taiyxrk5pHavuKA/exec";
+
+            // Použijeme form-data enkódovanie, ktoré Google Apps Script pri no-cors spracuje najspoľahlivejšie
+            var formBody = [];
+            for (var property in dataNaOdoslanie) {
+                var encodedKey = encodeURIComponent(property);
+                var encodedValue = encodeURIComponent(dataNaOdoslanie[property]);
+                formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
+
+            fetch(urlAplikacie, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+                },
+                body: formBody
+            })
+            .then(function() {
+                alert('Úspech! ❤️\n\nUpozornenie bolo odoslané na tvoj e-mail!');
+                submitBtn.innerText = 'Potvrdené! 🎉';
+            })
+            .catch(function(error) {
+                console.error('Chyba:', error);
+                alert('Ups, niečo sa pokazilo pri odosielaní. Skús to znova.');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Potvrdiť rande! 🎉';
+            });
+        }
+    </script>
+</body>
+</html>
