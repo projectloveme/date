@@ -255,33 +255,28 @@
             submitBtn.innerText = 'Odosielam... ⏳';
 
             var dataNaOdoslanie = {
-                plan: rande,
-                datum: datum,
-                cas: hodina + ':' + minuta
+                Aktivita: rande,
+                Datum: datum,
+                Cas: hodina + ':' + minuta
             };
 
-            var urlAplikacie = "https://script.google.com/macros/s/AKfycby9nhXO9NHTIZs6rXkmTjiHlN6fv5_YSnmhjYfAViv4XGxGcR98Ls6Taiyxrk5pHavuKA/exec";
+            var urlFormspree = "https://formspree.io/f/xpqeoqqw";
 
-            // Použijeme form-data enkódovanie, ktoré Google Apps Script pri no-cors spracuje najspoľahlivejšie
-            var formBody = [];
-            for (var property in dataNaOdoslanie) {
-                var encodedKey = encodeURIComponent(property);
-                var encodedValue = encodeURIComponent(dataNaOdoslanie[property]);
-                formBody.push(encodedKey + "=" + encodedValue);
-            }
-            formBody = formBody.join("&");
-
-            fetch(urlAplikacie, {
+            fetch(urlFormspree, {
                 method: "POST",
-                mode: "no-cors",
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 },
-                body: formBody
+                body: JSON.stringify(dataNaOdoslanie)
             })
-            .then(function() {
-                alert('Úspech! ❤️\n\nUpozornenie bolo odoslané na tvoj e-mail!');
-                submitBtn.innerText = 'Potvrdené! 🎉';
+            .then(function(response) {
+                if (response.ok) {
+                    alert('Úspech! ❤️\n\nUpozornenie bolo odoslané na tvoj e-mail!');
+                    submitBtn.innerText = 'Potvrdené! 🎉';
+                } else {
+                    throw new Error('Chyba servera');
+                }
             })
             .catch(function(error) {
                 console.error('Chyba:', error);
