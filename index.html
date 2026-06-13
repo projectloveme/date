@@ -254,8 +254,9 @@
             submitBtn.disabled = true;
             submitBtn.innerText = 'Odosielam... ⏳';
 
+            // window.location.href zabezpečí odoslanie kompletného linku stránky
             var dataNaOdoslanie = {
-                NazovStranky: document.title,
+                WebovaAdresa: window.location.href,
                 Aktivita: rande,
                 Datum: datum,
                 Cas: hodina + ':' + minuta
